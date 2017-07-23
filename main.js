@@ -114,32 +114,23 @@ setInterval(() => {
 }, 1000);
 
 // Network activity
-let network = grid.set(3, 0, 4, 10, contrib.sparkline, {
+let network = grid.set(3, 10, 2, 2, contrib.table, {
     label: 'Network activity',
-    tags: true,
-    style: {
-        fg: 'blue'
-    }
+    columnWidth: [20, 20]
 });
-
-let incommingPackages = [];
-let outgoingPackages  = [];
 
 setInterval(() => {
 
     sysinfo.networkInterfaceDefault().then(data => {
         return sysinfo.networkStats(data);
     }).then(data => {
-        incommingPackages.push(data.rx_sec);
-        outgoingPackages.push(data.tx_sec);
-
-        network.setData(
-            ['Incomming', 'Outgoing'],
-            [
-                incommingPackages,
-                outgoingPackages
+        network.setData({
+            headers: ['', ''],
+            data: [
+                ['Total incomming (mb)', Math.round((data.rx / (1024 * 1024)) * 100) / 100],
+                ['Total outgoing (mb)', Math.round((data.tx / (1024 * 1024)) * 100) / 100],
             ]
-        );
+        });
 
         screen.render();
     });
@@ -147,7 +138,7 @@ setInterval(() => {
 }, 1000);
 
 // Storage information
-let storage = grid.set(7, 0, 2, 5, contrib.table, {
+let storage = grid.set(3, 0, 2, 5, contrib.table, {
     label: 'Storage',
     columnWidth: [15, 15, 15, 15, 15, 15],
     columnSpacing: 5,
@@ -180,7 +171,7 @@ setInterval(() => {
 }, 1000);
 
 // User information
-let userInfo = grid.set(7, 5, 2, 5, contrib.table, {
+let userInfo = grid.set(3, 5, 2, 5, contrib.table, {
     label: 'Active users',
     columnWidth: [25, 25, 25],
     columnSpacing: 5,
@@ -202,6 +193,41 @@ setInterval(() => {
         userInfo.setData({
             headers: ['Username', 'Terminal', 'Last login'],
             data: users
+        });
+
+        screen.render();
+    });
+
+}, 1000);
+
+// Processes information
+let procInfo = grid.set(5, 0, 7, 12, contrib.table, {
+    label: 'Active processes (sleeping processes excluded)',
+    columnWidth: [25, 25, 25, 25, 25, 25, 25],
+});
+
+setInterval(() => {
+
+    sysinfo.processes().then(data => {
+        let procs = [];
+        for (let i = 0; i < data.list.length; i++) {
+            let proc = data.list[i];
+            if (proc.state != 'sleeping') {
+                procs.push([
+                    proc.pid,
+                    Math.round((proc.pcpu) * 100) / 100,
+                    Math.round((proc.pmem) * 100) / 100,
+                    Math.round((proc.mem_vsz / (1024 * 1024)) * 100) / 100,
+                    proc.started,
+                    proc.state,
+                    proc.user,
+                ]);
+            }
+        }
+
+        procInfo.setData({
+            headers: ['PID', 'CPU %', 'RAM %', 'Memory size (mb)', 'Started', 'Status', 'User'],
+            data: procs
         });
 
         screen.render();
