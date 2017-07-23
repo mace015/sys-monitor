@@ -6,13 +6,8 @@ A system resource/performance monitor for the terminal built in node.js
 
 In order to get this application to work, follow the following steps;
 
-* Clone this repository.
-    * `git clone https://github.com/mace015/sys-monitor`
-* From within the project directory, install all the dependencies via NPM.
-    * `cd sys-monitor` (if you haven't done this already)
-    * `npm install`
-* Run the application.
-    * `node main.js`
+* Install as a global NPM package.
+    * `npm i -g sys-monitor`
 
 ## Roadmap
 

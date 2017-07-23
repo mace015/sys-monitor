@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "sys-monitor": "main.js"
+  },
   "author": "Mace Muilman",
   "license": "ISC",
   "dependencies": {

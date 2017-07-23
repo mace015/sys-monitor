@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const sysinfo = require('systeminformation');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
