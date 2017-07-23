@@ -113,30 +113,6 @@ setInterval(() => {
 
 }, 1000);
 
-// Network activity
-let network = grid.set(3, 10, 2, 2, contrib.table, {
-    label: 'Network activity',
-    columnWidth: [20, 20]
-});
-
-setInterval(() => {
-
-    sysinfo.networkInterfaceDefault().then(data => {
-        return sysinfo.networkStats(data);
-    }).then(data => {
-        network.setData({
-            headers: ['', ''],
-            data: [
-                ['Total incomming (mb)', Math.round((data.rx / (1024 * 1024)) * 100) / 100],
-                ['Total outgoing (mb)', Math.round((data.tx / (1024 * 1024)) * 100) / 100],
-            ]
-        });
-
-        screen.render();
-    });
-
-}, 1000);
-
 // Storage information
 let storage = grid.set(3, 0, 2, 5, contrib.table, {
     label: 'Storage',
@@ -200,8 +176,36 @@ setInterval(() => {
 
 }, 1000);
 
+// Network activity
+let network = grid.set(3, 10, 2, 2, contrib.table, {
+    label: 'Network activity',
+    columnWidth: [25, 15]
+});
+
+setInterval(() => {
+
+    sysinfo.networkInterfaceDefault().then(data => {
+        return Promise.all([
+            sysinfo.networkStats(data),
+            sysinfo.inetLatency()
+        ]);
+    }).then(data => {
+        network.setData({
+            headers: ['', ''],
+            data: [
+                ['Total incomming (mb)', Math.round((data[0].rx / (1024 * 1024)) * 100) / 100],
+                ['Total outgoing (mb)', Math.round((data[0].tx / (1024 * 1024)) * 100) / 100],
+                ['Latency to 8.8.8.8 (ms)', data[1]],
+            ]
+        });
+
+        screen.render();
+    });
+
+}, 1000);
+
 // Processes information
-let procInfo = grid.set(5, 0, 7, 12, contrib.table, {
+let procInfo = grid.set(5, 0, 7, 10, contrib.table, {
     label: 'Active processes (sleeping processes excluded)',
     columnWidth: [25, 25, 25, 25, 25, 25, 25],
 });
